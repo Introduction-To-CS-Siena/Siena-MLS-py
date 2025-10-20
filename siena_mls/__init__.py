@@ -413,15 +413,23 @@ def writePictureTo(JESimg, filename):
     )
 
 
-def addText(JESimg, xpos, ypos, text, size, color=(0, 0, 0)):
-  # get font
-  fnt = ImageFont.load_default()
-  #fnt = ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', size)
-  # get a drawing context
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
-  # draw text, full opacity
-  d.text((int(xpos), int(ypos)), text, font=fnt, fill=color)
+def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
+    try:
+      fnt = ImageFont.truetype("arial.ttf", size)
+    except (IOError, OSError):
+      print("Font not found, using default Pillow font.")
+      fnt = ImageFont.load_default(size=size)
+    except ValueError as e:
+      # Cannot really gracefully recover from this error
+      # Exit the function if size overridden and is invalid
+      print(f"Invalid font size ({size}): {e}. Using default font.")
+      return 
 
+    # Create drawing context
+    d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+
+    # Draw text
+    d.text((int(xpos), int(ypos)), text, font=fnt, fill=color)
 
 def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
   # get a drawing context
