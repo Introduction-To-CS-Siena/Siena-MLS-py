@@ -19,6 +19,8 @@ import numpy
 import warnings
 import os
 
+import logging
+
 # ------ Extension Code
 from resizeimage import resizeimage
 # from pi_heif import register_heif_opener
@@ -417,12 +419,12 @@ def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
     try:
       fnt = ImageFont.truetype("arial.ttf", size)
     except (IOError, OSError):
-      print("Font not found, using default Pillow font.")
+      logging.warning("arial font not found, using default Pillow font.")
       fnt = ImageFont.load_default(size=size)
     except ValueError as e:
       # Cannot really gracefully recover from this error
       # Exit the function if size overridden and is invalid
-      print(f"Invalid font size ({size}): {e}. Using default font.")
+      logging.error(f"Invalid font size ({size}): {e}. Cannot add text.")
       return 
 
     # Create drawing context
