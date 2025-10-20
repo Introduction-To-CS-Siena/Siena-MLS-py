@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "siena_mls"
-version = "24"
+version = "25"
 description = "Multimedia Environment for Students"
 authors = ["Robin Flatland <flatland@siena.edu>","Ninad Chaudhari <nchaudhari@siena.edu>"]
 license = "aGPLv3"

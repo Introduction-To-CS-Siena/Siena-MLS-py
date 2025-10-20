@@ -415,8 +415,7 @@ def writePictureTo(JESimg, filename):
 
 def addText(JESimg, xpos, ypos, text, size, color=(0, 0, 0)):
   # get font
-  fnt = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-                           size)
+  fnt = ImageFont.load_default()
   #fnt = ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', size)
   # get a drawing context
   d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
@@ -434,7 +433,7 @@ def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
 # only allows the size of the font to change
 # because I'm not sure what other fonts are available on repl...
 def makeStyle(fontName, emphasis, size):
-  return ImageFont.truetype('Pillow/Tests/fonts/FreeMono.ttf', int(size))
+  return ImageFont.load_default()
 
 
 def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
