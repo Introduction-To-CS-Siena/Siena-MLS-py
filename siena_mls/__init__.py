@@ -36,6 +36,85 @@ def __init__():
 __init__()
 show = MLS_GUI_ImageFunctions.show
 # ------ End Extension
+
+# Define public API
+__all__ = [
+    # Color constants
+    'white', 'black', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
+    'orange', 'pink', 'gray', 'darkGray', 'lightGray',
+    # Image functions - creation and manipulation
+    'makePicture',
+    'makeEmptyPicture',
+    'duplicatePicture',
+    'copyInto',
+    'setAllPixelsToAColor',
+    'writePictureTo',
+    # Image functions - dimensions and pixels
+    'getWidth',
+    'getHeight',
+    'getPixel',
+    'getPixels',
+    'getAllPixels',
+    'getX',
+    'getY',
+    # Image functions - color manipulation
+    'setRed',
+    'setBlue',
+    'setGreen',
+    'getRed',
+    'getBlue',
+    'getGreen',
+    'getColor',
+    'setColor',
+    'makeColor',
+    'makeDarker',
+    'makeLighter',
+    'makeBrighter',
+    'distance',
+    'setColorWrapAround',
+    'getColorWrapAround',
+    # Image functions - drawing
+    'addText',
+    'makeStyle',
+    'addRect',
+    'addRectFilled',
+    'addLine',
+    'addOval',
+    'addOvalFilled',
+    'addArc',
+    'addArcFilled',
+    # Sound functions - creation and manipulation
+    'makeSound',
+    'writeSoundTo',
+    'makeEmptySound',
+    'makeEmptySoundBySeconds',
+    'duplicateSound',
+    # Sound functions - properties
+    'getLength',
+    'getNumSamples',
+    'getSamplingRate',
+    'getDuration',
+    # Sound functions - samples
+    'getSampleValueAt',
+    'setSampleValueAt',
+    'getSampleObjectAt',
+    'getSamples',
+    'getSound',
+    'getSampleValue',
+    'setSampleValue',
+    # Animation functions
+    'fileList',
+    'writeMovieTo',
+    'makeMovieFromInitialFile',
+    'writeAnimatedGif',
+    'writeSlideShowTo',
+    # Audio editing functions
+    'clip',
+    'copy',
+    # Extended functionality
+    'show',
+]
+
 class bcolors:
   HEADER = '\033[95m'
   OKBLUE = '\033[94m'
