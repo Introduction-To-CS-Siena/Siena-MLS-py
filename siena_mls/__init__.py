@@ -26,7 +26,7 @@ from resizeimage import resizeimage
 # from pi_heif import register_heif_opener
 from .management_service import ManagementService
 from .image_functions import MLS_GUI_ImageFunctions
-
+from .sound_functions import play
 def __init__():
   #register_heif_opener()
   management_service = ManagementService()
@@ -102,6 +102,8 @@ __all__ = [
     'getSound',
     'getSampleValue',
     'setSampleValue',
+    # Sound functions - playback Jupyter only(for now)
+    'play',
     # Animation functions
     'fileList',
     'writeMovieTo',

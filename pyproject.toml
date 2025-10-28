@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "siena_mls"
-version = "28"
+version = "29"
 description = "Multimedia Environment for Students"
 authors = ["Robin Flatland <flatland@siena.edu>","Ninad Chaudhari <nchaudhari@siena.edu>"]
 license = "aGPLv3"
@@ -20,6 +20,8 @@ numpy = ">=1.23.5, <2.3.0"
 python-resize-image = "^1.1.20"
 matplotlib = "^3.8" #currently only for "show" image function
 # pi-heif = "^0.13.1"
+plotly = "^6.3.1"
+nbconvert = "^7.16.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
