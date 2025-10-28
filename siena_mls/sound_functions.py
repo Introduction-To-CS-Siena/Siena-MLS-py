@@ -5,18 +5,11 @@ if TYPE_CHECKING:
 def _show_waveform_plotly_and_play(snd: "JESSound") -> None:
     # Lazy import optional deps so importing this module doesn’t fail outside notebooks
     try:
-        import sys
         import numpy as np
         import plotly.graph_objects as go
         from IPython.display import Audio, display
     except ImportError as e:
         print(f"[waveform] Optional deps missing (Plotly/IPython): {e}. Skipping visualization.")
-        return
-
-    # Best-effort check for Jupyter environment
-    in_notebook = ("ipykernel" in sys.modules)
-    if not in_notebook:
-        print("[waveform] Not running inside a Jupyter kernel. Skipping visualization.")
         return
 
     # Compute data
