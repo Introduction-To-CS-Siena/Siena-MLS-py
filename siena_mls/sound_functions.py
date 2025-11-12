@@ -39,7 +39,7 @@ def _show_waveform_plotly_and_play(snd: "JESSound") -> None:
         print(f"[waveform] Failed to display Plotly figure: {e}")
 
     try:
-        display(Audio(samples, rate=sr))
+        display(Audio(samples, rate=sr, normalize=False))
     except Exception as e:
         print(f"[waveform] Failed to play audio via IPython Audio: {e}")
 
