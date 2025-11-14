@@ -1,3 +1,4 @@
+from IPython.display import HTML
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,44 +7,50 @@ plt.rcParams["animation.html"] = "jshtml"  # <-- IMPORTANT
 
 def showAnimation(movie, frameRate=24):
     """Display an animation in a Jupyter notebook."""
-    _show_move_with_framerate(movie, frameRate)
+    return _show_move_as_animation(movie, frameRate)
 
-def _show_move_with_framerate(movie, frameRate=24):
+# Jupyter needs HTML explicitly returned so we can see the animation
+def _show_move_as_animation(movie, frameRate=24):
     """
-    movie: list of PIL.Image
-    frameRate: frames per second
+    movie: list of PIL.Image objects
+    frameRate: frames per second (matches your GIF writer)
+    Returns: HTML object that Jupyter can display as an animation
     """
+    if len(movie) == 0:
+        raise ValueError("movie is empty")
 
-    # Duration per frame in ms (same as your GIF code)
-    interval = 1000 / frameRate
-
+    # Make sure all frames will be same size
     first = np.array(movie[0])
 
     fig, ax = plt.subplots()
-    im = ax.imshow(first)
     ax.axis("off")
 
-    # Add a framerate text overlay
-    txt = ax.text(
-        5, 5,
-        f"{frameRate} FPS",
+    im = ax.imshow(first)
+
+    # Overlay FPS text
+    fr_text = ax.text(
+        5, 5, f"{frameRate} FPS",
         color="white",
         fontsize=12,
-        ha="left",
-        va="top",
-        bbox=dict(facecolor="black", alpha=0.5, pad=3)
+        fontweight="bold",
+        bbox=dict(facecolor="black", alpha=0.5, boxstyle="round,pad=0.2")
     )
 
     def update(i):
-        im.set_data(np.array(movie[i]))
-        return [im, txt]
+        frame = np.array(movie[i])
+        im.set_data(frame)
+        # no need to change fr_text; FPS is constant
+        return im, fr_text
 
     ani = FuncAnimation(
         fig,
         update,
         frames=len(movie),
-        interval=interval,  
-        blit=True
+        interval=1000 / frameRate,  # ms per frame
+        blit=False,                 # <- blit can cause "frozen" look in some setups
+        repeat=True
     )
+    # Prevent duplicate static figure from showing
+    plt.close(fig)
 
-    return ani
+    return HTML(ani.to_jshtml())
