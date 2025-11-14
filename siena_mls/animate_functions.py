@@ -3,13 +3,16 @@ from IPython.display import display, HTML
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import os
 
 plt.rcParams["animation.html"] = "jshtml"  # <-- IMPORTANT
 
 def showAnimation(movie, frameRate=24):
     """Display an animation in a Jupyter notebook!
        > Needs Sidecar installed."""
-    sc = Sidecar(title="Move Animation")
+    fname = movie[0].filename
+    title = os.path.basename(fname) if fname else "Animation"
+    sc = Sidecar(title=title)
     with sc:
         display(_show_move_as_animation(movie, frameRate))
 
