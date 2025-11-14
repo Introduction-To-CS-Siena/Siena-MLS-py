@@ -1,4 +1,5 @@
-from IPython.display import HTML
+from sidecar import Sidecar
+from IPython.display import display, HTML
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,8 +7,11 @@ from matplotlib.animation import FuncAnimation
 plt.rcParams["animation.html"] = "jshtml"  # <-- IMPORTANT
 
 def showAnimation(movie, frameRate=24):
-    """Display an animation in a Jupyter notebook."""
-    return _show_move_as_animation(movie, frameRate)
+    """Display an animation in a Jupyter notebook!
+       > Needs Sidecar installed."""
+    sc = Sidecar(title="Move Animation")
+    with sc:
+        display(_show_move_as_animation(movie, frameRate))
 
 # Jupyter needs HTML explicitly returned so we can see the animation
 def _show_move_as_animation(movie, frameRate=24):
