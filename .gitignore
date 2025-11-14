@@ -85,3 +85,6 @@ dmypy.json
 *.log
 *.sqlite
 .DS_Store
+
+# testing animations
+frames/

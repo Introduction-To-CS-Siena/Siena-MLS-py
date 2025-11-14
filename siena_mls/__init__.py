@@ -27,6 +27,7 @@ from resizeimage import resizeimage
 from .management_service import ManagementService
 from .image_functions import MLS_GUI_ImageFunctions
 from .sound_functions import play
+from .animate_functions import showAnimation
 def __init__():
   #register_heif_opener()
   management_service = ManagementService()
@@ -105,11 +106,12 @@ __all__ = [
     # Sound functions - playback Jupyter only(for now)
     'play',
     # Animation functions
-    'fileList',
     'writeMovieTo',
     'makeMovieFromInitialFile',
     'writeAnimatedGif',
     'writeSlideShowTo',
+    'showAnimation',
+    'writeFrame',
     # Audio editing functions
     'clip',
     'copy',
@@ -500,7 +502,7 @@ def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
     try:
       fnt = ImageFont.truetype("arial.ttf", size)
     except (IOError, OSError):
-      logging.warning("arial font not found, using default Pillow font.")
+      logging.info("arial font not found, using default Pillow font.")
       fnt = ImageFont.load_default(size=size)
     except ValueError as e:
       # Cannot really gracefully recover from this error
@@ -868,7 +870,20 @@ def writeAnimatedGif(movie, fileName, frameRate=24):
                 optimize=False,
                 duration=1000 / frameRate,
                 loop=0)
-
+  
+# from ANimation lab
+# This is program 175 in Python textbook. It writes pict to
+# the indicated folder using file name frameXXX.jpg, where
+# XXX is num padded with leading zeros if num less than 3 digits.
+def writeFrame(num, folder, pict):
+  # Have to deal with single digit vs. double digit 
+  numStr=str(num)
+  if num < 10:
+    writePictureTo(pict,folder+"/frame00"+numStr+".jpg")
+  if num >= 10 and num<100:
+    writePictureTo(pict,folder+"/frame0"+numStr+".jpg")
+  if num >= 100:
+    writePictureTo(pict,folder+"/frame"+numStr+".jpg")
 
 def writeSlideShowTo(fileName, delay=1):
   # get names of all files in the folder
