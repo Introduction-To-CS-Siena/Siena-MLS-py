@@ -34,6 +34,10 @@ from siena_mls import *
 
 The project is configured to auto deploy to PyPi on project release. Here is a possible sequence of actions that may help.
 
+### Playground
+
+The `playground.ipynb` file can be used to test things out. It is not part of the package. Run it using `jupyter lab ./playground.ipynb` to test out new features, before updating the version number and deploying.
+
 ### Contributions
 
 1. Use github codespaces / local VSCode to make changes.
