@@ -41,11 +41,24 @@ def _show_move_as_animation(movie, frameRate=24):
         bbox=dict(facecolor="black", alpha=0.5, boxstyle="round,pad=0.2")
     )
 
+    # Bottom-right frame counter (relative to axes)
+    frame_text = ax.text(
+        0.995, 0.005, f"Frame 1/{len(movie)}",
+        transform=ax.transAxes,
+        color="white",
+        fontsize=12,
+        fontweight="bold",
+        ha="right",
+        va="bottom",
+        bbox=dict(facecolor="black", alpha=0.5, boxstyle="round,pad=0.2")
+    )
+
     def update(i):
         frame = np.array(movie[i])
         im.set_data(frame)
+        frame_text.set_text(f"Frame {i+1}/{len(movie)}")
         # no need to change fr_text; FPS is constant
-        return im, fr_text
+        return im, fr_text, frame_text
 
     ani = FuncAnimation(
         fig,
