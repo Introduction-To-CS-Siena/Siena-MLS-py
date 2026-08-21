@@ -103,6 +103,9 @@ __all__ = [
     'getSound',
     'getSampleValue',
     'setSampleValue',
+    # Sound classes
+    'JESSound',
+    'JESound',
     # Sound functions - playback Jupyter only(for now)
     'play',
     # Animation functions
@@ -212,6 +215,9 @@ class JESSound:
   def __str__(self):
     return "Sound, filename " + self.filename + "\n   number of samples " + str(
         len(self.samples)) + " sample rate " + str(self.sampleRate)
+
+# Alias: JESound is the canonical public name for JESSound
+JESound = JESSound
 
 
 #########################################################
