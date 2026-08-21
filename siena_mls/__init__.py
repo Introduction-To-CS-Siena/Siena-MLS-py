@@ -220,7 +220,10 @@ def makePicture(filename):
   """
     Creates and returns a JESImage object from the specified image file.
 
-    This function opens an image file and automatically resizes it if its area exceeds 360,000 pixels. It converts images in "RGBA" and "P" modes to "RGB".
+    This function opens an image file and automatically resizes it if its area
+    exceeds 360,000 pixels.  All images are normalised to RGB mode so that
+    drawing operations (via ImageDraw) always work correctly regardless of the
+    source format (e.g. RGBA, P/palette, L/greyscale, CMYK).
 
     Args:
         filename (str): The path of the image file to be opened.
@@ -234,6 +237,8 @@ def makePicture(filename):
   """
   PILimg = Image.open(filename)
   PILimg = ImageOps.exif_transpose(PILimg) #rotate/transform the image according to its exif tag
+  if PILimg.mode != "RGB":
+    PILimg = PILimg.convert("RGB")
   iArea = PILimg.height * PILimg.width
 
   if (iArea > 360000):
@@ -246,7 +251,6 @@ def makePicture(filename):
     resized_img = PILimg.copy()
     resized_img.thumbnail((600, 600), Image.LANCZOS)
     writePictureTo(JESImage(resized_img, resized_img_name),resized_img_name)
-  # if PILimg.mode in ("RGBA", "P"): PILimg = PILimg.convert("RGB")
   return JESImage(PILimg, filename)
 
 
@@ -288,6 +292,8 @@ def makeEmptyPicture(width, height, color=(255, 255, 255)):
 
 def duplicatePicture(JESimg):
   dup = JESimg.PILimg.copy()
+  if dup.mode != "RGB":
+    dup = dup.convert("RGB")
   return JESImage(dup, "noFileName")
 
 
