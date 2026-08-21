@@ -6,6 +6,13 @@ from matplotlib.animation import FuncAnimation
 
 plt.rcParams["animation.html"] = "jshtml"  # <-- IMPORTANT
 
+
+def _to_array(frame):
+    """Return a NumPy pixel array from either a JESImage or a PIL.Image."""
+    pil_img = getattr(frame, "PILimg", frame)
+    return np.array(pil_img)
+
+
 def showAnimation(movie, frameRate=24):
     """Display an animation in a Jupyter notebook!
        > Needs Sidecar installed."""
@@ -17,7 +24,7 @@ def showAnimation(movie, frameRate=24):
 # Jupyter needs HTML explicitly returned so we can see the animation
 def _show_move_as_animation(movie, frameRate=24):
     """
-    movie: list of PIL.Image objects
+    movie: list of JESImage or PIL.Image objects
     frameRate: frames per second (matches your GIF writer)
     Returns: HTML object that Jupyter can display as an animation
     """
@@ -25,7 +32,7 @@ def _show_move_as_animation(movie, frameRate=24):
         raise ValueError("movie is empty")
 
     # Make sure all frames will be same size
-    first = np.array(movie[0])
+    first = _to_array(movie[0])
 
     fig, ax = plt.subplots()
     ax.axis("off")
@@ -54,7 +61,7 @@ def _show_move_as_animation(movie, frameRate=24):
     )
 
     def update(i):
-        frame = np.array(movie[i])
+        frame = _to_array(movie[i])
         im.set_data(frame)
         frame_text.set_text(f"Frame {i+1}/{len(movie)}")
         # no need to change fr_text; FPS is constant

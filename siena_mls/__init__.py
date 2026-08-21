@@ -532,7 +532,7 @@ def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
 # only allows the size of the font to change
 # because I'm not sure what other fonts are available on repl...
 def makeStyle(fontName, emphasis, size):
-  return ImageFont.load_default()
+  return ImageFont.load_default(size=size)
 
 
 def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
@@ -650,15 +650,12 @@ def makeSound(filename):
   warnings.filterwarnings("ignore")
   sampleRate, samples = wavfile.read(filename)
   # Check and see if samples is single channel (mono).
-  # It is mono if samples[0] is a number, it is
-  # multi-channeled if samples[0] is a numpy.ndarray
-  if (type(samples[0]) is numpy.ndarray):
+  # Multi-channel audio has ndim == 2 (rows=samples, cols=channels).
+  if samples.ndim == 2:
     # copy data from 1st channel into data (make it mono)
-    data = numpy.zeros(len(samples), dtype=numpy.int16)
-    for i in range(0, len(samples)):
-      data[i] = samples[i][0]  # take just 1st channel
+    data = numpy.array(samples[:, 0], dtype=numpy.int16)
   else:
-    data = numpy.copy(samples)
+    data = numpy.array(samples, dtype=numpy.int16)
   # samples is read-only array, so make copy that is writeable
   return JESSound(sampleRate, data, filename)
 
@@ -713,7 +710,7 @@ def getSampleValueAt(JESsnd, index):
         >>> snd = makeSound("path/to/sound.wav")
         >>> value = getSampleValueAt(snd, 0) # Retrieves the first sample value.
     """
-    return JESsnd.samples[index]
+    return int(JESsnd.samples[index])
 
 
 def setSampleValueAt(JESsnd, index, val):
@@ -747,7 +744,7 @@ def getSound(JESsam):
 
 
 def getSampleValue(JESsam):
-  return JESsam.JESsnd.samples[JESsam.index]
+  return int(JESsam.JESsnd.samples[JESsam.index])
 
 
 def setSampleValue(JESsam, value):
@@ -874,7 +871,7 @@ def writeAnimatedGif(movie, fileName, frameRate=24):
                 save_all=True,
                 append_images=movie[1:],
                 optimize=False,
-                duration=1000 / frameRate,
+                duration=int(round(1000 / frameRate)),
                 loop=0)
   
 # from ANimation lab
