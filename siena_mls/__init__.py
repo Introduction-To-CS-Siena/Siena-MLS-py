@@ -22,7 +22,6 @@ import os
 import logging
 
 # ------ Extension Code
-from resizeimage import resizeimage
 # from pi_heif import register_heif_opener
 from .management_service import ManagementService
 from .image_functions import MLS_GUI_ImageFunctions
@@ -244,7 +243,8 @@ def makePicture(filename):
     print(
         f"{bcolors.OKBLUE}Creating {resized_img_name}; a resized version: use for speed.{bcolors.ENDC}"
     )
-    resized_img = resizeimage.resize_thumbnail(PILimg, [600, 600])
+    resized_img = PILimg.copy()
+    resized_img.thumbnail((600, 600), Image.LANCZOS)
     writePictureTo(JESImage(resized_img, resized_img_name),resized_img_name)
   # if PILimg.mode in ("RGBA", "P"): PILimg = PILimg.convert("RGB")
   return JESImage(PILimg, filename)
@@ -511,14 +511,14 @@ def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
       return 
 
     # Create drawing context
-    d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+    d = ImageDraw.Draw(JESimg.PILimg)
 
     # Draw text
     d.text((int(xpos), int(ypos)), text, font=fnt, fill=color)
 
 def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
   # get a drawing context
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   # draw text, full opacity
   d.text((int(xpos), int(ypos)), text, font=style, fill=color)
 
@@ -530,7 +530,7 @@ def makeStyle(fontName, emphasis, size):
 
 
 def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.rectangle(
       [int(startX),
        int(startY),
@@ -541,7 +541,7 @@ def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addRectFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.rectangle(
       [int(startX),
        int(startY),
@@ -552,12 +552,12 @@ def addRectFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addLine(JESimg, startX, startY, endX, endY, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.line([int(startX), int(startY), int(endX), int(endY)], fill=color, width=2)
 
 
 def addOval(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.ellipse(
       [int(startX),
        int(startY),
@@ -568,7 +568,7 @@ def addOval(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addOvalFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.ellipse(
       [int(startX),
        int(startY),
@@ -586,7 +586,7 @@ def addArc(JESimg,
            start,
            angle,
            color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.arc([int(startX),
          int(startY),
          int(startX + width),
@@ -604,7 +604,7 @@ def addArcFilled(JESimg,
                  start,
                  angle,
                  color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.pieslice(
       [int(startX),
        int(startY),
