@@ -18,6 +18,8 @@ import math
 import numpy
 import warnings
 import os
+import urllib.request
+import tempfile
 
 import logging
 
@@ -510,15 +512,64 @@ def writePictureTo(JESimg, filename):
     )
 
 
+# Path to the DejaVuSans TrueType font bundled with this package.
+# This ensures addText works in environments (e.g. JupyterLite) where
+# system fonts such as Arial are unavailable.
+_BUNDLED_FONT_PATH = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
+
+# URL used as a last-resort download if the bundled font is somehow missing.
+_FALLBACK_FONT_URL = (
+    "https://github.com/dejavu-fonts/dejavu-fonts/raw/refs/heads/master/ttf/DejaVuSans.ttf"
+)
+_downloaded_font_path = None
+
+
+def _load_fallback_font(size):
+    """Load a fallback TrueType font for use when system fonts are unavailable.
+
+    Resolution order:
+    1. The DejaVuSans.ttf bundled with this package.
+    2. A one-time download of DejaVuSans from the internet (cached in /tmp).
+    3. Pillow's built-in bitmap font (always available, but does not scale).
+    """
+    global _downloaded_font_path
+
+    # 1. Prefer the bundled font
+    if os.path.exists(_BUNDLED_FONT_PATH):
+        try:
+            return ImageFont.truetype(_BUNDLED_FONT_PATH, size)
+        except Exception as e:
+            logging.warning(f"Could not load bundled font: {e}.")
+
+    # 2. Try a cached/downloaded copy
+    if _downloaded_font_path is None or not os.path.exists(_downloaded_font_path):
+        try:
+            tmp = tempfile.NamedTemporaryFile(suffix=".ttf", delete=False)
+            urllib.request.urlretrieve(_FALLBACK_FONT_URL, tmp.name)
+            _downloaded_font_path = tmp.name
+            logging.info(f"Downloaded fallback font to {_downloaded_font_path}")
+        except Exception as e:
+            logging.warning(f"Could not download fallback font: {e}. Using built-in Pillow font.")
+            _downloaded_font_path = None
+
+    if _downloaded_font_path:
+        try:
+            return ImageFont.truetype(_downloaded_font_path, size)
+        except Exception as e:
+            logging.warning(f"Could not load downloaded font: {e}. Using built-in Pillow font.")
+
+    # 3. Last resort: Pillow's built-in bitmap font
+    return ImageFont.load_default(size=size)
+
+
 def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
+    if size <= 0:
+        raise ValueError(f"addText: font size must be greater than 0, but got {size}.")
     try:
       fnt = ImageFont.truetype("arial.ttf", size)
     except (IOError, OSError):
-      logging.info("arial font not found, using default Pillow font.")
-      fnt = ImageFont.load_default(size=size)
+      fnt = _load_fallback_font(size)
     except ValueError as e:
-      # Cannot really gracefully recover from this error
-      # Exit the function if size overridden and is invalid
       logging.error(f"Invalid font size ({size}): {e}. Cannot add text.")
       return 
 
