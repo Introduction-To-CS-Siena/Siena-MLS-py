@@ -22,7 +22,6 @@ import os
 import logging
 
 # ------ Extension Code
-from resizeimage import resizeimage
 # from pi_heif import register_heif_opener
 from .management_service import ManagementService
 from .image_functions import MLS_GUI_ImageFunctions
@@ -221,7 +220,10 @@ def makePicture(filename):
   """
     Creates and returns a JESImage object from the specified image file.
 
-    This function opens an image file and automatically resizes it if its area exceeds 360,000 pixels. It converts images in "RGBA" and "P" modes to "RGB".
+    This function opens an image file and automatically resizes it if its area
+    exceeds 360,000 pixels.  All images are normalised to RGB mode so that
+    drawing operations (via ImageDraw) always work correctly regardless of the
+    source format (e.g. RGBA, P/palette, L/greyscale, CMYK).
 
     Args:
         filename (str): The path of the image file to be opened.
@@ -235,6 +237,8 @@ def makePicture(filename):
   """
   PILimg = Image.open(filename)
   PILimg = ImageOps.exif_transpose(PILimg) #rotate/transform the image according to its exif tag
+  if PILimg.mode != "RGB":
+    PILimg = PILimg.convert("RGB")
   iArea = PILimg.height * PILimg.width
 
   if (iArea > 360000):
@@ -244,9 +248,9 @@ def makePicture(filename):
     print(
         f"{bcolors.OKBLUE}Creating {resized_img_name}; a resized version: use for speed.{bcolors.ENDC}"
     )
-    resized_img = resizeimage.resize_thumbnail(PILimg, [600, 600])
+    resized_img = PILimg.copy()
+    resized_img.thumbnail((600, 600), Image.LANCZOS)
     writePictureTo(JESImage(resized_img, resized_img_name),resized_img_name)
-  # if PILimg.mode in ("RGBA", "P"): PILimg = PILimg.convert("RGB")
   return JESImage(PILimg, filename)
 
 
@@ -288,6 +292,8 @@ def makeEmptyPicture(width, height, color=(255, 255, 255)):
 
 def duplicatePicture(JESimg):
   dup = JESimg.PILimg.copy()
+  if dup.mode != "RGB":
+    dup = dup.convert("RGB")
   return JESImage(dup, "noFileName")
 
 
@@ -511,14 +517,14 @@ def addText(JESimg, xpos, ypos, text, size=12, color=(0, 0, 0)):
       return 
 
     # Create drawing context
-    d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+    d = ImageDraw.Draw(JESimg.PILimg)
 
     # Draw text
     d.text((int(xpos), int(ypos)), text, font=fnt, fill=color)
 
 def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
   # get a drawing context
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   # draw text, full opacity
   d.text((int(xpos), int(ypos)), text, font=style, fill=color)
 
@@ -526,11 +532,11 @@ def addTextWithStyle(JESimg, xpos, ypos, text, style, color=(0, 0, 0)):
 # only allows the size of the font to change
 # because I'm not sure what other fonts are available on repl...
 def makeStyle(fontName, emphasis, size):
-  return ImageFont.load_default()
+  return ImageFont.load_default(size=size)
 
 
 def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.rectangle(
       [int(startX),
        int(startY),
@@ -541,7 +547,7 @@ def addRect(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addRectFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.rectangle(
       [int(startX),
        int(startY),
@@ -552,12 +558,12 @@ def addRectFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addLine(JESimg, startX, startY, endX, endY, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.line([int(startX), int(startY), int(endX), int(endY)], fill=color, width=2)
 
 
 def addOval(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.ellipse(
       [int(startX),
        int(startY),
@@ -568,7 +574,7 @@ def addOval(JESimg, startX, startY, width, height, color=(0, 0, 0)):
 
 
 def addOvalFilled(JESimg, startX, startY, width, height, color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.ellipse(
       [int(startX),
        int(startY),
@@ -586,7 +592,7 @@ def addArc(JESimg,
            start,
            angle,
            color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.arc([int(startX),
          int(startY),
          int(startX + width),
@@ -604,7 +610,7 @@ def addArcFilled(JESimg,
                  start,
                  angle,
                  color=(0, 0, 0)):
-  d = ImageDraw.Draw(JESimg.PILimg, mode="RGB")
+  d = ImageDraw.Draw(JESimg.PILimg)
   d.pieslice(
       [int(startX),
        int(startY),
@@ -644,15 +650,12 @@ def makeSound(filename):
   warnings.filterwarnings("ignore")
   sampleRate, samples = wavfile.read(filename)
   # Check and see if samples is single channel (mono).
-  # It is mono if samples[0] is a number, it is
-  # multi-channeled if samples[0] is a numpy.ndarray
-  if (type(samples[0]) is numpy.ndarray):
+  # Multi-channel audio has ndim == 2 (rows=samples, cols=channels).
+  if samples.ndim == 2:
     # copy data from 1st channel into data (make it mono)
-    data = numpy.zeros(len(samples), dtype=numpy.int16)
-    for i in range(0, len(samples)):
-      data[i] = samples[i][0]  # take just 1st channel
+    data = numpy.array(samples[:, 0], dtype=numpy.int16)
   else:
-    data = numpy.copy(samples)
+    data = numpy.array(samples, dtype=numpy.int16)
   # samples is read-only array, so make copy that is writeable
   return JESSound(sampleRate, data, filename)
 
@@ -707,7 +710,7 @@ def getSampleValueAt(JESsnd, index):
         >>> snd = makeSound("path/to/sound.wav")
         >>> value = getSampleValueAt(snd, 0) # Retrieves the first sample value.
     """
-    return JESsnd.samples[index]
+    return int(JESsnd.samples[index])
 
 
 def setSampleValueAt(JESsnd, index, val):
@@ -741,7 +744,7 @@ def getSound(JESsam):
 
 
 def getSampleValue(JESsam):
-  return JESsam.JESsnd.samples[JESsam.index]
+  return int(JESsam.JESsnd.samples[JESsam.index])
 
 
 def setSampleValue(JESsam, value):
@@ -868,7 +871,7 @@ def writeAnimatedGif(movie, fileName, frameRate=24):
                 save_all=True,
                 append_images=movie[1:],
                 optimize=False,
-                duration=1000 / frameRate,
+                duration=int(round(1000 / frameRate)),
                 loop=0)
   
 # from ANimation lab
