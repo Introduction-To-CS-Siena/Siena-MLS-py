@@ -69,7 +69,7 @@ The same can be acheved without using pytest
 
 ## Installing dependencies
 
-`pip install .` can parse `pyproject.toml` and install all deps in current python environment.
+`pip install .` can parse `pyproject.toml` and install all runtime dependencies, including `requests`, in the current python environment.
 
 ## Project Commands & Scripts
 
