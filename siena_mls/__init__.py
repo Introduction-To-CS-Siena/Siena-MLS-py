@@ -43,7 +43,7 @@ show = MLS_GUI_ImageFunctions.show
 __all__ = [
     # Color constants
     'white', 'black', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta',
-    'orange', 'pink', 'gray', 'darkGray', 'lightGray',
+    'orange', 'purple', 'violet', 'indigo', 'pink', 'gray', 'darkGray', 'lightGray',
     # Image functions - creation and manipulation
     'makePicture',
     'makeEmptyPicture',
@@ -139,12 +139,15 @@ JESColorWrapAround = False  #by default
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
+orange = (255, 165, 0)
+yellow = (255, 255, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
-yellow = (255, 255, 0)
+indigo = (75, 0, 130)
+violet = (148, 0, 211)
+purple = (128, 0, 128)
 cyan = (0, 255, 255)
 magenta = (255, 0, 255)
-orange = (255, 165, 0)
 pink = (255, 20, 147)
 gray = (165, 165, 165)
 darkGray = (120, 120, 120)
