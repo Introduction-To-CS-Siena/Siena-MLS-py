@@ -786,13 +786,14 @@ def setSampleValueAt(JESsnd, index, val):
 
     Raises:
         IndexError: If the index is out of the range of the sound's sample array.
-        ValueError: If the provided value is outside the permissible range for audio samples.
 
     Examples:
         >>> snd = makeSound("path/to/sound.wav")
         >>> setSampleValueAt(snd, 0, 123) # Sets the first sample value to 123.
     """
-    JESsnd.samples[index] = val
+    JESsnd.samples[index] = numpy.clip(
+        val, numpy.iinfo(numpy.int16).min, numpy.iinfo(numpy.int16).max
+    )
 
 
 def getSamplingRate(JESsnd):
@@ -808,7 +809,9 @@ def getSampleValue(JESsam):
 
 
 def setSampleValue(JESsam, value):
-  JESsam.JESsnd.samples[JESsam.index] = value
+  JESsam.JESsnd.samples[JESsam.index] = numpy.clip(
+      value, numpy.iinfo(numpy.int16).min, numpy.iinfo(numpy.int16).max
+  )
 
 
 def getSampleObjectAt(JESsnd, index):
